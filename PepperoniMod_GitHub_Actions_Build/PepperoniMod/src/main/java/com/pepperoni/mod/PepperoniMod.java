@@ -10,7 +10,6 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 
 import net.minecraftforge.common.ForgeSpawnEggItem;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -25,12 +24,15 @@ public class PepperoniMod {
 
     public static final String MODID = "pepperoni";
 
+    // Entity registry
     public static final DeferredRegister<EntityType<?>> ENTITIES =
             DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
 
+    // Item registry
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
 
+    // Pepperoni entity
     public static final RegistryObject<EntityType<PepperoniEntity>> PEPPERONI =
             ENTITIES.register("pepperoni", () ->
                     EntityType.Builder
@@ -40,6 +42,7 @@ public class PepperoniMod {
                             .build("pepperoni")
             );
 
+    // Pepperoni spawn egg
     public static final RegistryObject<Item> PEPPERONI_SPAWN_EGG =
             ITEMS.register("pepperoni_spawn_egg", () ->
                     new ForgeSpawnEggItem(
@@ -50,6 +53,7 @@ public class PepperoniMod {
                     )
             );
 
+    // Mod constructor
     public PepperoniMod() {
 
         IEventBus modBus =
@@ -62,15 +66,14 @@ public class PepperoniMod {
         ENTITIES.register(modBus);
         ITEMS.register(modBus);
 
-        // Register creative inventory entry
+        // Register creative tab
         modBus.addListener(this::addCreative);
 
         // Register entity attributes
         modBus.addListener(this::registerAttributes);
-
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
+    // Add spawn egg to creative inventory
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
 
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
@@ -78,6 +81,7 @@ public class PepperoniMod {
         }
     }
 
+    // Register Pepperoni's attributes
     private void registerAttributes(EntityAttributeCreationEvent event) {
 
         event.put(
