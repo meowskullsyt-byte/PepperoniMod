@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download source code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Install Java 17
@@ -20,18 +20,34 @@ jobs:
           java-version: '17'
           distribution: temurin
 
-      - name: Install Gradle 8.8
+      - name: Install Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.8'
 
-      - name: Build Pepperoni
-        working-directory: PepperoniMod_GitHub_Actions_Build
-        run: gradle build --no-daemon
+      - name: Find and build mod
+        shell: bash
+        run: |
+          echo "Searching for Gradle project..."
+
+          BUILD_FILE=$(find . -type f \( -name settings.gradle -o -name settings.gradle.kts \) -not -path '*/.gradle/*' | head -n 1)
+
+          if [ -z "$BUILD_FILE" ]; then
+            echo "ERROR: Could not find settings.gradle!"
+            find . -maxdepth 5 -type f
+            exit 1
+          fi
+
+          PROJECT_DIR=$(dirname "$BUILD_FILE")
+
+          echo "Found project: $PROJECT_DIR"
+
+          cd "$PROJECT_DIR"
+          gradle build --no-daemon
 
       - name: Upload Pepperoni JAR
         uses: actions/upload-artifact@v4
         with:
           name: PepperoniMod-JAR
-          path: PepperoniMod_GitHub_Actions_Build/build/libs/*.jar
+          path: '**/build/libs/*.jar'
           if-no-files-found: error
